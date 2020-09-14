@@ -1,5 +1,5 @@
 [package]
-name = "ant-colony-opt-TSP"
+name = "ant-colony-opt-tsp"
 version = "0.1.0"
 authors = ["Velázquez Cruz Rodrigo Fernando <rodrigo_velazquez99@ciencias.unam.mx>"]
 edition = "2018"

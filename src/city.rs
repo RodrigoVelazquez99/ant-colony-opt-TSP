@@ -4,7 +4,7 @@ use std::fmt;
 #[derive(Debug)]
 pub struct City {
     #[allow(dead_code)]
-    id: u32,
+    pub id: u32,
     pub name: String,
     x_axis: f32,
     y_axis: f32,
@@ -28,5 +28,12 @@ impl City {
 impl fmt::Display for City {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "{}", self.name)
+    }
+}
+
+
+impl PartialEq for City {
+    fn eq(&self, other : &Self) -> bool {
+        self.id == other.id && self.name == other.name && self.x_axis == other.x_axis && self.y_axis == other.y_axis
     }
 }
