@@ -4,22 +4,22 @@ mod path;
 mod ant;
 
 fn main() {
-    aco();
+    let world = init_data_cities();
+    let graph = init_graph(&world);
+    let nest = city::City::new(1, String::from("Ciudad 1"), 11003.611100, 42102.500000);
+    aco(world, graph, nest);
 }
 
 // Ant Colony Optimization algorithm
-fn aco () {
-    let world = init_data_cities();
+fn aco (world : Vec<city::City>, graph : Vec<path::Path>, nest : city::City) {
     let mut ants : Vec<ant::Ant> = Vec::new();
     // Initial city where ants starts to search a solution
-    let nest = world.iter().find(|c| c.name == "Ciudad 1");
-    let nest = nest.unwrap();
-    for n in 1..51 {
-        ants.push(ant::Ant::new(nest));
+    for _n in 1..2 {
+        ants.push(ant::Ant::new(&nest));
     }
-
-    for a in ants.iter() {
-        println!("{}", a);
+    // Each ant gets a tour from the graph
+    for mut ant in ants {
+        ant.get_tour(&graph, &world);
     }
 
 
@@ -71,6 +71,21 @@ fn init_data_cities () -> Vec::<city::City> {
 
     vec![c, c1, c2, c3, c4, c5, c6, c7, c8, c9,
      c10, c11, c12, c13, c14, c15, c16, c17, c18,
-      c19, c20, c21, c23, c24, c25, c26, c27, c28,
+      c19, c20, c21, c22, c23, c24, c25, c26, c27, c28,
        c29, c30, c31, c32, c33, c34, c35, c36, c37]
+}
+
+// Build the init graph with all posible paths.
+fn init_graph (world : &Vec<city::City>) -> Vec<path::Path> {
+    let mut graph : Vec<path::Path> = Vec::new();
+
+    for city in world.iter() {
+        for city_ in world.iter() {
+            if city != city_ {
+                let new_path = path::Path::new(city, city_);
+                graph.push(new_path);
+            }
+        }
+    }
+    return graph;
 }

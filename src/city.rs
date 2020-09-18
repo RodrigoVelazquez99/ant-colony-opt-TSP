@@ -1,7 +1,7 @@
 
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct City {
     #[allow(dead_code)]
     pub id: u32,
