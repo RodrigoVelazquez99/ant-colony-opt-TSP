@@ -22,6 +22,10 @@ impl Path {
         unsafe { &*self.to_city }
     }
 
+    pub fn set_pheromone (&mut self, new_pheromone : f32) {
+        self.pheromone = new_pheromone;
+    }
+
 }
 
 impl fmt::Display for Path {

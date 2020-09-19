@@ -50,7 +50,8 @@ impl Ant {
                 //println!("ciudad final {}", unsafe { (*possible_paths[0]).get_to_city().clone() });
                 cities_to_find.clear();
                 // Path between nest and final city
-                let return_path = graph.iter().filter(|x| unsafe { (*x).get_to_city().clone() == (*self.nest).clone() && (*x).get_from_city() == actual});
+                let return_path = graph.iter().find(|x| unsafe { (*x).get_to_city().clone() == (*self.nest).clone() && (*x).get_from_city() == actual}).unwrap();
+                self.tour.push(return_path);
                 println!("\n\n EL TOUR ES: \n\n", );
                 for p in self.tour.clone() {
                     println!("{}", unsafe { (*p).clone() });
