@@ -26,11 +26,22 @@ impl Path {
         self.pheromone = new_pheromone;
     }
 
+    pub fn euclidean_distance (&self) -> f32 {
+        let mut distance : f32 = 0.0;
+        let city1 = unsafe { (*self.from_city).clone() };
+        let city2 = unsafe { (*self.to_city).clone() };
+        let x_diff = city2.get_x_axis() - city1.get_x_axis();
+        let y_diff = city2.get_y_axis() - city1.get_y_axis();
+        distance = x_diff.powf(2.0) + y_diff.powf(2.0);
+        distance = distance.sqrt();
+        return distance;
+    }
+
 }
 
 impl fmt::Display for Path {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        write!(f, "[{} -> {}]", unsafe { (*self.from_city).name.clone() },  unsafe { (*self.to_city).name.clone() })
+        write!(f, "[{} -> {}] : pheromone : {}", unsafe { (*self.from_city).name.clone() },  unsafe { (*self.to_city).name.clone() }, self.pheromone)
     }
 }
 

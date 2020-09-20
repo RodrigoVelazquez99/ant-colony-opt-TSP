@@ -6,7 +6,7 @@ use rand::Rng;
 #[derive(Debug)]
 pub struct Ant {
     #[allow(dead_code)]
-    tour : Vec<*const path::Path>,
+    pub tour : Vec<*const path::Path>,
     nest : *const city::City
 }
 
@@ -45,12 +45,14 @@ impl Ant {
             // There is only a path avaible
             if possible_paths.len() == 1 {
                 let final_path = possible_paths[0];
+                let f = unsafe { &mut (*final_path).clone() as *mut path::Path };
                 self.tour.push(final_path);
                 actual = unsafe { &(final_path).get_to_city() };
                 //println!("ciudad final {}", unsafe { (*possible_paths[0]).get_to_city().clone() });
                 cities_to_find.clear();
                 // Path between nest and final city
                 let return_path = graph.iter().find(|x| unsafe { (*x).get_to_city().clone() == (*self.nest).clone() && (*x).get_from_city() == actual}).unwrap();
+                let r = unsafe { &mut (*return_path).clone() as *mut path::Path };
                 self.tour.push(return_path);
                 println!("\n\n EL TOUR ES: \n\n", );
                 for p in self.tour.clone() {
@@ -78,7 +80,8 @@ impl Ant {
             for probability in probabilities.iter() {
                 if probability.0 <= rand_number {
                     let choosed_path = probability.1;
-                    self.tour.push (choosed_path);
+                    let c = choosed_path as *mut path::Path;
+                    self.tour.push (c);
                     println!("{}", unsafe { (*choosed_path).clone() });
                     println!("ciudad a la que se dirige {}", unsafe { (*choosed_path).get_to_city() });
                     let index = cities_to_find.iter().position(|x| *x == unsafe { (*choosed_path).get_to_city() } ).unwrap();
@@ -100,6 +103,26 @@ impl Ant {
         let index = possible_paths.iter().position(|x| *x == possible_path).unwrap();
         possible_paths.remove(index);
     }
+
+    pub fn objective_function (&self) -> f32 {
+        let mut cost : f32 = 0.0;
+        for path in self.tour.clone() {
+            let mut acc = unsafe { (*path).clone() };
+            cost += acc.euclidean_distance();
+        }
+        return cost;
+    }
+/*
+    pub fn update_paths_tour(&self, q : f32, graph : &mut Vec<path::Path>) {
+        let objective_function = self.objective_function();
+        for path in self.tour.iter() {
+            unsafe {
+                let mut pa = graph.iter().find(|x| **x == **path).unwrap();
+                pa.set_pheromone(pa.pheromone + q / objective_function)
+            }
+        }
+    }*/
+
 }
 
 impl fmt::Display for Ant {

@@ -16,12 +16,12 @@ impl City {
         City { id, name, x_axis, y_axis}
     }
 
-    pub fn get_id(&self) -> u32 {
-        self.id
+    pub fn get_x_axis (&self) -> f32 {
+        self.x_axis
     }
 
-    pub fn set_id(&mut self, id:u32) {
-        self.id = id;
+    pub fn get_y_axis (&self) -> f32 {
+        self.y_axis
     }
 }
 
