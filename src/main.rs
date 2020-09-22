@@ -1,5 +1,5 @@
 use rand::Rng;
-use std::convert::TryInto;
+use std::time::{Instant};
 mod city;
 mod path;
 mod ant;
@@ -7,16 +7,17 @@ mod ant;
 fn main() {
     let world = init_data_cities();
     let graph = init_graph(&world);
-    let best_tour = aco(world, graph, 0.60, 0.20);
+    aco(world, graph, 0.60, 0.20);
 }
 
 // Ant Colony Optimization algorithm
-fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) -> Vec::< path::Path> {
+fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) {
     let mut ants : Vec<ant::Ant> = Vec::new();
     let mut best_tour : Vec<path::Path> = Vec::new();
     let mut best_objective = 1000000000000000.0;
-    for i in 1..=20 {
-        for _n in 1..=100 {
+    let time = Instant::now();
+    for _ in 1..=5 {
+        for _n in 1..=50 {
             // Take random nest
             let mut rng = rand::thread_rng();
             let rand_number = rng.gen_range(0, 37);
@@ -24,14 +25,14 @@ fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) 
             ants.push(ant::Ant::new(nest));
         }
         // Each ant gets a tour from the graph
-        for mut ant in &mut ants {
+        for ant in &mut ants {
             ant.get_tour(&graph, &world);
         }
         // Update paths
         update_pheromone(&mut graph, &ants, p, q);
 
         // Get the best tour in current generation
-        for mut ant in &mut ants {
+        for ant in &mut ants {
             let current_objective = ant.objective_function();
             if current_objective <= best_objective {
                 best_objective = current_objective;
@@ -45,13 +46,13 @@ fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) 
     }
     println!("Costo : {}", best_objective);
     println!("MEJOR TOUR >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    return best_tour;
+    println!("Tiempo {:#?}", time.elapsed() );
 }
 
 // Evaporate all pheromone in graphs and update paths in each ant tour
 fn update_pheromone(graph : &mut Vec<path::Path>, ants : &Vec<ant::Ant>, p : f32, q : f32) {
     // Evaporate all paths
-    for mut path in graph.into_iter() {
+    for path in graph.into_iter() {
         let new_pheromone = (1.00 - p) * path.pheromone;
         path.set_pheromone ( new_pheromone);
     }
@@ -61,7 +62,7 @@ fn update_pheromone(graph : &mut Vec<path::Path>, ants : &Vec<ant::Ant>, p : f32
         let objective_function = ant.objective_function();
         for path in ant.tour.iter() {
             unsafe {
-                let mut pa = graph.into_iter().find(|x| **x == **path).unwrap();
+                let pa = graph.into_iter().find(|x| **x == **path).unwrap();
                 pa.set_pheromone(pa.pheromone + q / objective_function);
             }
         }
@@ -130,7 +131,7 @@ fn init_graph (world : &Vec<city::City>) -> Vec<path::Path> {
     for city in world.iter() {
         for city_ in world.iter() {
             if city != city_ {
-                let mut new_path = path::Path::new(city, city_);
+                let new_path = path::Path::new(city, city_);
                 graph.push(new_path);
             }
         }
