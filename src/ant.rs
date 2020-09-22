@@ -11,7 +11,7 @@ pub struct Ant {
 }
 
 // Pair for the probability of choose the path
-struct ProbPath (f32, *const path::Path, *const city::City);
+struct ProbPath (f32, *const path::Path);
 
 impl Ant {
     pub fn new (nest : &city::City) -> Ant {
@@ -61,7 +61,7 @@ impl Ant {
             // Asign each path a probability to choose
             let mut probabilities : Vec<ProbPath> = Vec::new();
             for possible_path in &possible_paths {
-                let probability_path = ProbPath(possible_path.pheromone / possible_paths_pheromone, &**possible_path, possible_path.get_to_city());
+                let probability_path = ProbPath(possible_path.pheromone / possible_paths_pheromone, &**possible_path);
                 probabilities.push(probability_path);
             }
 

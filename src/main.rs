@@ -24,6 +24,7 @@ fn main() {
 * q : constant for update pheromone.
 */
 fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) {
+    println!("\nOptimización por colonia de hormigas\n");
     let mut ants : Vec<ant::Ant> = Vec::new();
     let mut best_tour : Vec<path::Path> = Vec::new();
     let mut best_objective = f32::INFINITY;
@@ -52,12 +53,12 @@ fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) 
             }
         }
     }
-    println!("<<<<<<<<<<<<<<<<<<<<< MEJOR TOUR >>>>>>>>>>>>>>>>>>>>> \n");
+    println!("\n <<<<<<<<<<<<<<<<<<<<< MEJOR TOUR >>>>>>>>>>>>>>>>>>>>> \n");
     for s  in best_tour.clone() {
         println!("{}", s);
     }
     println!("\nCosto (distancia) : {} \n", best_objective);
-    println!("Tiempo que tomo encontrarlo : {:#?} \n", time.elapsed() );
+    println!("Tiempo que tomó encontrarlo : {:#?} \n", time.elapsed() );
 }
 
 /**
