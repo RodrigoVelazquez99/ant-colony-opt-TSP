@@ -47,6 +47,6 @@ impl fmt::Display for Path {
 
 impl PartialEq for Path {
     fn eq(&self, other : &Self) -> bool {
-        self.from_city == other.from_city && self.to_city == other.to_city && self.pheromone == other.pheromone
+        self.from_city == other.from_city && self.to_city == other.to_city
     }
 }

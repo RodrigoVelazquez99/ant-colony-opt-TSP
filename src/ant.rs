@@ -20,27 +20,40 @@ impl Ant {
 
     // Build a tour from all paths in graph
     pub fn get_tour (&mut self, graph : &Vec::<path::Path>, world : &Vec::<city::City>) {
-
+        println!("CONSTRUYENDO TOUR ----------------------");
         let mut actual = unsafe { &*self.nest.clone() };
         let mut cities_to_find : Vec<&city::City> = world.into_iter().filter(|x| **x != *actual ).collect::<Vec<&city::City>>().clone();
-        while ! cities_to_find.is_empty() {
+        while !cities_to_find.is_empty() {
 
-            let mut possible_paths : Vec::<&path::Path> = graph.into_iter().filter(|x| *x.get_from_city() == *actual).collect::<Vec<&path::Path>>().clone();
-
+            let mut possible_paths : Vec::<&path::Path> = graph.into_iter().filter(|x| *x.get_from_city() == actual.clone()).collect::<Vec<&path::Path>>().clone();
             let mut t = self.tour.clone();
             let searched_cities = t.into_iter().map(|x| unsafe { (*x).get_from_city() }).collect::<Vec<&city::City>>();
+
             for path in possible_paths.clone() {
                 let to_city = unsafe { &*path.get_to_city() };
                 let is_in_cities = searched_cities.iter().position(|x| **x == unsafe { (*to_city).clone() });
                 match is_in_cities {
-                    Some(i) => self.remove_path(&mut possible_paths, &path),
-                    None => continue,
+                    Some(_) => self.remove_path(&mut possible_paths, &path),
+                    _ => continue,
                 }
             }
+
 
             println!("ciudad actual {} \n", unsafe { (*actual).clone()} );
             println!("caminos posibles : {}\n", possible_paths.len() );
             let mut possible_paths_pheromone : f32 = 0.0;
+
+            if possible_paths.len() == 0 {
+                // Path between nest and final city
+                let return_path = graph.iter().find(|x| unsafe { (*x).get_to_city().clone() == (*self.nest).clone() && (*x).get_from_city().clone() == actual.clone()}).unwrap();
+                let r = unsafe { &mut (*return_path).clone() as *mut path::Path };
+                self.tour.push(return_path);
+                println!("\n\n EL TOUR ES: \n\n", );
+                for p in self.tour.clone() {
+                    println!("{}", unsafe { (*p).clone() });
+                }
+                break;
+            }
 
             // There is only a path avaible
             if possible_paths.len() == 1 {

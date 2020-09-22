@@ -1,4 +1,5 @@
-
+use rand::Rng;
+use std::convert::TryInto;
 mod city;
 mod path;
 mod ant;
@@ -6,22 +7,25 @@ mod ant;
 fn main() {
     let world = init_data_cities();
     let graph = init_graph(&world);
-    let nest = city::City::new(1, String::from("Ciudad 1"), 11003.611100, 42102.500000);
-    aco(world, graph, nest, 0.35, 0.70);
+    aco(world, graph, 0.35, 0.70);
 }
 
 // Ant Colony Optimization algorithm
-fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, nest : city::City, p : f32, q : f32) {
+fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) {
     let mut ants : Vec<ant::Ant> = Vec::new();
-    // Initial city where ants starts to search a solution
-    for _n in 1..=50 {
-        ants.push(ant::Ant::new(&nest));
-    }
-    // Each ant gets a tour from the graph
-    for mut ant in &mut ants {
-        ant.get_tour(&graph, &world);
-    }
-    update_pheromone(&mut graph, &ants, p, q);
+        for _n in 1..=100 {
+            // Take random nest
+            let mut rng = rand::thread_rng();
+            let rand_number = rng.gen_range(0, 37);
+            let nest = &world[rand_number];
+            ants.push(ant::Ant::new(nest));
+        }
+        // Each ant gets a tour from the graph
+        for mut ant in &mut ants {
+            ant.get_tour(&graph, &world);
+        }
+        // Update paths
+        update_pheromone(&mut graph, &ants, p, q);
 }
 
 // Evaporate all pheromone in graphs and update paths in each ant tour
