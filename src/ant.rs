@@ -44,14 +44,6 @@ impl Ant {
             let mut possible_paths_pheromone : f32 = 0.0;
 
             if possible_paths.len() == 0 {
-                // Path between nest and final city
-                let return_path = graph.iter().find(|x| unsafe { (*x).get_to_city().clone() == (*self.nest).clone() && (*x).get_from_city().clone() == actual.clone()}).unwrap();
-                let r = unsafe { &mut (*return_path).clone() as *mut path::Path };
-                self.tour.push(return_path);
-                println!("\n\n EL TOUR ES: \n\n", );
-                for p in self.tour.clone() {
-                    println!("{}", unsafe { (*p).clone() });
-                }
                 break;
             }
 
@@ -113,7 +105,7 @@ impl Ant {
     }
 
     fn remove_path(&mut self, possible_paths : &mut Vec::<&path::Path>, possible_path : &path::Path) {
-        let index = possible_paths.iter().position(|x| *x == possible_path).unwrap();
+        let index = possible_paths.iter().position(|x| **x == *possible_path).unwrap();
         possible_paths.remove(index);
     }
 

@@ -8,11 +8,13 @@ fn main() {
     let world = init_data_cities();
     let graph = init_graph(&world);
     aco(world, graph, 0.35, 0.70);
+    //println!("{}", best_tour);
 }
 
 // Ant Colony Optimization algorithm
 fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) {
     let mut ants : Vec<ant::Ant> = Vec::new();
+    for i in 1..=10 {
         for _n in 1..=100 {
             // Take random nest
             let mut rng = rand::thread_rng();
@@ -26,6 +28,7 @@ fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) 
         }
         // Update paths
         update_pheromone(&mut graph, &ants, p, q);
+    }
 }
 
 // Evaporate all pheromone in graphs and update paths in each ant tour
