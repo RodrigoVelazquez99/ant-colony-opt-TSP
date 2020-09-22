@@ -10,11 +10,23 @@ fn main() {
     aco(world, graph, 0.60, 0.20);
 }
 
-// Ant Colony Optimization algorithm
+/**
+* Ant Colony Optimization Algorithm
+*
+* With the given world and graph, in each step,
+* initialize a group of ants, and every ant builds
+* its tour in graph, then update the pheromone in
+* paths with the constants p, q, finally print the best tour.
+*
+* world : vector with the cities in graph.
+* graph : vector with the paths (edges).
+* p : constant for evaporate pheromone.
+* q : constant for update pheromone.
+*/
 fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) {
     let mut ants : Vec<ant::Ant> = Vec::new();
     let mut best_tour : Vec<path::Path> = Vec::new();
-    let mut best_objective = 1000000000000000.0;
+    let mut best_objective = f32::INFINITY;
     let time = Instant::now();
     for _ in 1..=5 {
         for _n in 1..=50 {
@@ -26,7 +38,7 @@ fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) 
         }
         // Each ant gets a tour from the graph
         for ant in &mut ants {
-            ant.get_tour(&graph, &world);
+            ant.build_tour(&graph, &world);
         }
         // Update paths
         update_pheromone(&mut graph, &ants, p, q);
@@ -36,20 +48,26 @@ fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) 
             let current_objective = ant.objective_function();
             if current_objective <= best_objective {
                 best_objective = current_objective;
-                best_tour = ant.get_t();
+                best_tour = ant.get_tour();
             }
         }
     }
-    println!("<<<<<<<<<<<<<<<<<<<<< MEJOR TOUR >>>>>>>>>>>>>>>>>>>>>");
+    println!("<<<<<<<<<<<<<<<<<<<<< MEJOR TOUR >>>>>>>>>>>>>>>>>>>>> \n");
     for s  in best_tour.clone() {
         println!("{}", s);
     }
-    println!("Costo : {}", best_objective);
-    println!("MEJOR TOUR >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-    println!("Tiempo {:#?}", time.elapsed() );
+    println!("\nCosto (distancia) : {} \n", best_objective);
+    println!("Tiempo que tomo encontrarlo : {:#?} \n", time.elapsed() );
 }
 
-// Evaporate all pheromone in graphs and update paths in each ant tour
+/**
+* Evaporate all pheromone in graphs and update paths in each ant tour
+*
+* graph : vector with the paths (edges).
+* ants : vector with the ants.
+* p : constant for evaporate pheromone.
+* q : constant for update pheromone.
+*/
 fn update_pheromone(graph : &mut Vec<path::Path>, ants : &Vec<ant::Ant>, p : f32, q : f32) {
     // Evaporate all paths
     for path in graph.into_iter() {
@@ -57,7 +75,7 @@ fn update_pheromone(graph : &mut Vec<path::Path>, ants : &Vec<ant::Ant>, p : f32
         path.set_pheromone ( new_pheromone);
     }
 
-    // Update paths that were visited
+    // Update only paths that were visited
     for ant in ants {
         let objective_function = ant.objective_function();
         for path in ant.tour.iter() {
@@ -67,14 +85,9 @@ fn update_pheromone(graph : &mut Vec<path::Path>, ants : &Vec<ant::Ant>, p : f32
             }
         }
     }
-
-    for p in graph.into_iter() {
-        println!("{}", p);
-    }
-
 }
 
-// Create init cities
+// Init cities in graph
 fn init_data_cities () -> Vec::<city::City> {
     let c = city::City::new (1, String::from("Ciudad 1"), 11003.611100, 42102.500000);
     let c1 = city::City::new (2, String::from("Ciudad 2"), 11108.611100, 42373.888900);

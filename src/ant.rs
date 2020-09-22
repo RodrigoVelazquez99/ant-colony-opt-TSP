@@ -19,7 +19,7 @@ impl Ant {
     }
 
     // Build a tour from all paths in graph
-    pub fn get_tour (&mut self, graph : &Vec::<path::Path>, world : &Vec::<city::City>) {
+    pub fn build_tour (&mut self, graph : &Vec::<path::Path>, world : &Vec::<city::City>) {
         let w = world.clone();
         println!("CONSTRUYENDO TOUR ----------------------");
         let mut actual = unsafe { &*self.nest.clone() };
@@ -103,7 +103,7 @@ impl Ant {
 
     }
 
-    pub fn get_t (&self) -> Vec::<path::Path> {
+    pub fn get_tour (&self) -> Vec::<path::Path> {
         let mut tour : Vec::<path::Path> = Vec::new();
 
         for path in &self.tour {
