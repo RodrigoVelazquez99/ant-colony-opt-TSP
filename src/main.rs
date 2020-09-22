@@ -7,14 +7,15 @@ mod ant;
 fn main() {
     let world = init_data_cities();
     let graph = init_graph(&world);
-    aco(world, graph, 0.35, 0.70);
-    //println!("{}", best_tour);
+    let best_tour = aco(world, graph, 0.60, 0.20);
 }
 
 // Ant Colony Optimization algorithm
-fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) {
+fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) -> Vec::< path::Path> {
     let mut ants : Vec<ant::Ant> = Vec::new();
-    for i in 1..=10 {
+    let mut best_tour : Vec<path::Path> = Vec::new();
+    let mut best_objective = 1000000000000000.0;
+    for i in 1..=20 {
         for _n in 1..=100 {
             // Take random nest
             let mut rng = rand::thread_rng();
@@ -28,7 +29,23 @@ fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) 
         }
         // Update paths
         update_pheromone(&mut graph, &ants, p, q);
+
+        // Get the best tour in current generation
+        for mut ant in &mut ants {
+            let current_objective = ant.objective_function();
+            if current_objective <= best_objective {
+                best_objective = current_objective;
+                best_tour = ant.get_t();
+            }
+        }
     }
+    println!("<<<<<<<<<<<<<<<<<<<<< MEJOR TOUR >>>>>>>>>>>>>>>>>>>>>");
+    for s  in best_tour.clone() {
+        println!("{}", s);
+    }
+    println!("Costo : {}", best_objective);
+    println!("MEJOR TOUR >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    return best_tour;
 }
 
 // Evaporate all pheromone in graphs and update paths in each ant tour

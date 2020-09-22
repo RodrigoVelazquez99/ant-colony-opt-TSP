@@ -20,9 +20,10 @@ impl Ant {
 
     // Build a tour from all paths in graph
     pub fn get_tour (&mut self, graph : &Vec::<path::Path>, world : &Vec::<city::City>) {
+        let w = world.clone();
         println!("CONSTRUYENDO TOUR ----------------------");
         let mut actual = unsafe { &*self.nest.clone() };
-        let mut cities_to_find : Vec<&city::City> = world.into_iter().filter(|x| **x != *actual ).collect::<Vec<&city::City>>().clone();
+        let mut cities_to_find : Vec<city::City> = w.into_iter().filter(|x| *x != actual.clone() ).collect::<Vec<city::City>>().clone();
         while !cities_to_find.is_empty() {
 
             let mut possible_paths : Vec::<&path::Path> = graph.into_iter().filter(|x| *x.get_from_city() == actual.clone()).collect::<Vec<&path::Path>>().clone();
@@ -50,14 +51,12 @@ impl Ant {
             // There is only a path avaible
             if possible_paths.len() == 1 {
                 let final_path = possible_paths[0];
-                let f = unsafe { &mut (*final_path).clone() as *mut path::Path };
                 self.tour.push(final_path);
                 actual = unsafe { &(final_path).get_to_city() };
                 //println!("ciudad final {}", unsafe { (*possible_paths[0]).get_to_city().clone() });
                 cities_to_find.clear();
                 // Path between nest and final city
                 let return_path = graph.iter().find(|x| unsafe { (*x).get_to_city().clone() == (*self.nest).clone() && (*x).get_from_city() == actual}).unwrap();
-                let r = unsafe { &mut (*return_path).clone() as *mut path::Path };
                 self.tour.push(return_path);
                 println!("\n\n EL TOUR ES: \n\n", );
                 for p in self.tour.clone() {
@@ -89,7 +88,7 @@ impl Ant {
                     self.tour.push (c);
                     println!("{}", unsafe { (*choosed_path).clone() });
                     println!("ciudad a la que se dirige {}", unsafe { (*choosed_path).get_to_city() });
-                    let index = cities_to_find.iter().position(|x| *x == unsafe { (*choosed_path).get_to_city() } ).unwrap();
+                    let index = cities_to_find.iter().position(|x| *x == unsafe { (*choosed_path).get_to_city().clone() } ).unwrap();
                     actual = unsafe { (*choosed_path).get_to_city() };
                     println!("nueva ciudad actual {}", actual);
                     cities_to_find.remove(index);
@@ -103,6 +102,16 @@ impl Ant {
         }
 
     }
+
+    pub fn get_t (&self) -> Vec::<path::Path> {
+        let mut tour : Vec::<path::Path> = Vec::new();
+
+        for path in &self.tour {
+            unsafe { tour.push((**path).clone()) };
+        }
+        return tour;
+    }
+
 
     fn remove_path(&mut self, possible_paths : &mut Vec::<&path::Path>, possible_path : &path::Path) {
         let index = possible_paths.iter().position(|x| **x == *possible_path).unwrap();
