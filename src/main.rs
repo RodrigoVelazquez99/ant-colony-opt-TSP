@@ -29,8 +29,8 @@ fn aco (world : Vec<city::City>, mut graph : Vec<path::Path>, p : f32, q : f32) 
     let mut best_tour : Vec<path::Path> = Vec::new();
     let mut best_objective = f32::INFINITY;
     let time = Instant::now();
-    for _ in 1..=5 {
-        for _n in 1..=50 {
+    for _ in 1..=10 {
+        for _n in 1..=10 {
             // Take random nest
             let mut rng = rand::thread_rng();
             let rand_number = rng.gen_range(0, 37);

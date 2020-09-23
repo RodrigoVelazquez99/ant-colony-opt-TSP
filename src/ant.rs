@@ -70,13 +70,15 @@ impl Ant {
 
             // Select a path with the given probability.
             for probability in probabilities.iter() {
-                if probability.0 <= rand_number {
+                if rand_number <= probability.0 {
                     let choosed_path = probability.1;
                     let c = choosed_path as *mut path::Path;
                     self.tour.push (c);
                     let index = cities_to_find.iter().position(|x| *x == unsafe { (*choosed_path).get_to_city().clone() } ).unwrap();
                     actual = unsafe { (*choosed_path).get_to_city() };
                     cities_to_find.remove(index);
+                    let curr = probabilities.iter().position(|x| x.1 == choosed_path).unwrap();
+                    probabilities.remove(curr);
                     break;
                 }
             }
